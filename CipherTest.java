@@ -153,17 +153,23 @@ class PlayfairCipher implements Cipher {
     }
 }
 
-// Test class
+// Main class to interact with user
 public class CipherTest {
     public static void main(String[] args) {
-        Cipher transposition = new TranspositionCipher(4);
-        String transEncrypted = transposition.encrypt("HELLO WORLD");
-        System.out.println("Transposition Encrypted: " + transEncrypted);
-        System.out.println("Transposition Decrypted: " + transposition.decrypt(transEncrypted));
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Choose Cipher (1: Transposition, 2: Playfair): ");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
 
-        Cipher playfair = new PlayfairCipher("KEYWORD");
-        String playfairEncrypted = playfair.encrypt("HELLO WORLD");
-        System.out.println("Playfair Encrypted: " + playfairEncrypted);
-        System.out.println("Playfair Decrypted: " + playfair.decrypt(playfairEncrypted));
+        System.out.print("Enter text: ");
+        String text = scanner.nextLine();
+
+        System.out.print("Choose action (1: Encrypt, 2: Decrypt): ");
+        int action = scanner.nextInt();
+
+        Cipher cipher = (choice == 1) ? new TranspositionCipher(4) : new PlayfairCipher("KEYWORD");
+        String result = (action == 1) ? cipher.encrypt(text) : cipher.decrypt(text);
+
+        System.out.println("Result: " + result);
     }
 }
