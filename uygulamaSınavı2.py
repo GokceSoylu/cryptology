@@ -2,9 +2,6 @@ import base64
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 
-def ascii_minus_one(s):
-    return ''.join(chr(ord(c)-1) for c in s)
-
 def caesar_decrypt(ciphertext, shift=7):
     decrypted = ''
     for char in ciphertext:
@@ -16,34 +13,38 @@ def caesar_decrypt(ciphertext, shift=7):
             decrypted += char
     return decrypted
 
+def ascii_minus_one(s):
+    return ''.join(chr(ord(c) - 1) for c in s)
+
 def aes_decrypt_ecb(ciphertext_bytes, key):
     cipher = AES.new(key, AES.MODE_ECB)
     decrypted = cipher.decrypt(ciphertext_bytes)
     return unpad(decrypted, AES.block_size).decode()
 
-key = b'Secret16ByteKey!'
-
 # 1. Base64 decode
 cipher_b64 = "yNjMHmg6dB9czTMOA2D6nA=="
-step1 = base64.b64decode(cipher_b64)
-print("1. After Base64 decode (bytes):", step1)
+cipher_bytes = base64.b64decode(cipher_b64)
+print("1. After Base64 decode:", cipher_bytes)
 
-# 2. Caesar -7
-step2 = caesar_decrypt(step1.decode(errors='ignore'))
-print("2. After Caesar decryption:", step2)
+# 2. AES decrypt
+key = b'Secret16ByteKey!'
+try:
+    step2 = aes_decrypt_ecb(cipher_bytes, key)
+    print("2. After AES decryption:", step2)
+except Exception as e:
+    print("AES decryption failed:", e)
+    exit()
 
 # 3. Reverse
 step3 = step2[::-1]
 print("3. After reversing:", step3)
 
-# 4. ASCII -1
-step4 = ascii_minus_one(step3)
-print("4. After ASCII -1:", step4)
+# 4. Caesar -7
+step4 = caesar_decrypt(step3)
+print("4. After Caesar decryption:", step4)
 
-# 5. AES decrypt
-try:
-    step5 = aes_decrypt_ecb(step4.encode(), key)
-    print("5. After AES decryption:", step5)
-    print("Original message:", step5)
-except Exception as e:
-    print("AES decryption failed:", e)
+# 5. ASCII -1
+step5 = ascii_minus_one(step4)
+print("5. After ASCII -1:", step5)
+
+print("Original message:", step5)
