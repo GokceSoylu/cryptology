@@ -33,7 +33,7 @@ print("1. After Base64 decode:", step1)
 # Doğru sırada yapılmadığında bazı adımlar (özellikle AES) hata verecektir.
 
 # Step2: AES decrypt (doğru sıra olasılığı)
-key = b'Secret16ByteKey'
+key = b'Secret16ByteKey!'  # Artık 16 byte oldu
 step2 = aes_decrypt_ecb(step1, key)
 if step2:
     print("2. After AES decryption:", step2)
