@@ -19,37 +19,32 @@ def caesar_decrypt(ciphertext, shift=7):
 def aes_decrypt_ecb(ciphertext_bytes, key):
     cipher = AES.new(key, AES.MODE_ECB)
     decrypted = cipher.decrypt(ciphertext_bytes)
-    try:
-        return unpad(decrypted, AES.block_size).decode()
-    except ValueError:
-        return None
+    return unpad(decrypted, AES.block_size).decode()
 
-# Başlangıç: base64 decode
+# AES anahtarı (16 byte olmalı!)
+key = b'Secret16ByteKey!'
+
+# 1. Base64 decode
 cipher_b64 = "yNjMHmg6dB9czTMOA2D6nA=="
 step1 = base64.b64decode(cipher_b64)
-print("1. After Base64 decode:", step1)
+print("1. After Base64 decode (bytes):", step1)
 
-# Şimdi olası tüm işlem sıralarını deneyerek brute force ilerleyelim.
-# Doğru sırada yapılmadığında bazı adımlar (özellikle AES) hata verecektir.
+# 2. ASCII -1
+step2 = ascii_minus_one(step1.decode(errors='ignore'))
+print("2. After ASCII -1:", step2)
 
-# Step2: AES decrypt (doğru sıra olasılığı)
-key = b'Secret16ByteKey!'  # Artık 16 byte oldu
-step2 = aes_decrypt_ecb(step1, key)
-if step2:
-    print("2. After AES decryption:", step2)
+# 3. Reverse
+step3 = step2[::-1]
+print("3. After reversing:", step3)
 
-    # Step3: reverse
-    step3 = step2[::-1]
-    print("3. After reversing:", step3)
+# 4. Caesar -7
+step4 = caesar_decrypt(step3)
+print("4. After Caesar decryption:", step4)
 
-    # Step4: Caesar -7
-    step4 = caesar_decrypt(step3, shift=7)
-    print("4. After Caesar decryption:", step4)
-
-    # Step5: ASCII -1
-    step5 = ascii_minus_one(step4)
-    print("5. After ASCII -1:", step5)
-
+# 5. AES decrypt
+try:
+    step5 = aes_decrypt_ecb(step4.encode(), key)
+    print("5. After AES decryption:", step5)
     print("Original message:", step5)
-else:
-    print("AES decryption failed at this order. Try other ordering.")
+except Exception as e:
+    print("AES decryption failed:", e)
