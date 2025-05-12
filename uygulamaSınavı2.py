@@ -21,7 +21,6 @@ def aes_decrypt_ecb(ciphertext_bytes, key):
     decrypted = cipher.decrypt(ciphertext_bytes)
     return unpad(decrypted, AES.block_size).decode()
 
-# AES anahtarı (16 byte olmalı!)
 key = b'Secret16ByteKey!'
 
 # 1. Base64 decode
@@ -29,17 +28,17 @@ cipher_b64 = "yNjMHmg6dB9czTMOA2D6nA=="
 step1 = base64.b64decode(cipher_b64)
 print("1. After Base64 decode (bytes):", step1)
 
-# 2. ASCII -1
-step2 = ascii_minus_one(step1.decode(errors='ignore'))
-print("2. After ASCII -1:", step2)
+# 2. Caesar -7
+step2 = caesar_decrypt(step1.decode(errors='ignore'))
+print("2. After Caesar decryption:", step2)
 
 # 3. Reverse
 step3 = step2[::-1]
 print("3. After reversing:", step3)
 
-# 4. Caesar -7
-step4 = caesar_decrypt(step3)
-print("4. After Caesar decryption:", step4)
+# 4. ASCII -1
+step4 = ascii_minus_one(step3)
+print("4. After ASCII -1:", step4)
 
 # 5. AES decrypt
 try:
